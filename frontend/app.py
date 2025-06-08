@@ -22,7 +22,7 @@ if st.button("Analyze Changes"):
             data = response.json()
 
             st.write("🔎 Raw backend response:")
-            st.json(data)  # DEBUG: See what's coming back
+            st.json(data)
 
             if not data["results"]:
                 st.info("✅ No significant changes detected.")
