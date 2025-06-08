@@ -17,12 +17,10 @@ def analyze_change(change):
     )
 
     try:
-        # Write the prompt to a temporary file
         with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt') as tmp_file:
             tmp_file.write(prompt)
             tmp_file_path = tmp_file.name
 
-        # Run the command: type prompt.txt | ollama run tinyllama
         command = f'type "{tmp_file_path}" | ollama run tinyllama'
         result = subprocess.run(
             command,
@@ -31,14 +29,13 @@ def analyze_change(change):
             timeout=90
         )
 
-        # Clean up the temp file
+    
         os.remove(tmp_file_path)
 
         output = result.stdout.decode("utf-8").strip()
         print("=== LLM Raw Output ===")
         print(output)
 
-        # Extract JSON object
         match = re.search(r'\{.*?\}', output, re.DOTALL)
         if not match:
             raise ValueError("No JSON found")
