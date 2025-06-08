@@ -1,6 +1,8 @@
 import subprocess
 import json
 import re
+import tempfile
+import os
 
 def analyze_change(change):
     prompt = (
@@ -15,17 +17,27 @@ def analyze_change(change):
     )
 
     try:
+    
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt') as tmp:
+            tmp.write(prompt)
+            tmp_path = tmp.name
+
+
         result = subprocess.run(
-            ["ollama", "run", "tinyllama"],
-            input=prompt.encode("utf-8"),
+            f'type "{tmp_path}" | ollama run tinyllama',
+            shell=True,
             capture_output=True,
             timeout=60
         )
+
+
+        os.remove(tmp_path)
 
         output = result.stdout.decode("utf-8").strip()
 
         print("=== LLM Raw Output ===")
         print(output)
+
 
         match = re.search(r'\{.*?\}', output, re.DOTALL)
         if not match:
